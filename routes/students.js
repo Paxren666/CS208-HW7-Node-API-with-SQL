@@ -10,7 +10,19 @@ const db = require("./../db");
  */
 router.get("/students", async function (req, res)
 {
-    // TODO: implement this route
+    try
+    {
+        const listOfStudents = await db.getAllStudents();
+        console.log("listOfStudents:", listOfStudents);
+
+        // Automatically converts array of students to JSON
+        res.send(listOfStudents);
+    }
+    catch (err)
+    {
+        console.error("Error:", err.message);
+        res.status(500).json({ "error": "Internal Server Error" });
+    }
 });
 
 
