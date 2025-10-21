@@ -38,6 +38,33 @@ router.get("/registered_students", async function (req, res)
 router.post("/add_student_to_class", async function (req, res)
 {
     // TODO: implement this route
+    try
+    {
+        const studentId = req.body.studentId;
+        const classId = req.body.classId;
+
+        console.log("studentId = " + studentId + ", classId = " + classId);
+
+        // basic validation
+        if (!studentId || !classId)
+        {
+            res.status(400).json({ "error": "missing studentId or classId" });
+            return;
+        }
+
+        await db.addStudentToClass(studentId, classId);
+
+        res.status(201).json({
+            "message": "SUCCESSFULLY added the student with id = " + studentId + " to the class with id = " + classId
+        });
+    }
+    catch (err)
+    {
+        console.error("Error:", err.message);
+        res.status(422).json({
+            "error": "failed to add the student with id = " + req.body.studentId + " to the class with id = " + req.body.classId
+        });
+    }
 });
 
 

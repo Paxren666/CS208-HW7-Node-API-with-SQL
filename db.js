@@ -516,7 +516,14 @@ function getAllRegisteredStudents()
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `SELECT students.id,
+                        students.first_name || ' ' || students.last_name AS student_full_name,
+                        classes.code,
+                        classes.title
+                 FROM registered_students
+                          INNER JOIN students ON registered_students.student_id = students.id
+                          INNER JOIN classes ON registered_students.class_id = classes.id
+                 ORDER BY students.id;`;
 
             let listOfRegisteredStudentJoinResults = [];
 
@@ -566,7 +573,8 @@ function addStudentToClass(studentId, classId)
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `INSERT INTO registered_students (student_id, class_id)
+                 VALUES (?, ?);`;
 
             function callbackAfterReturnedRowIsProcessed(err, row)
             {
