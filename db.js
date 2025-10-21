@@ -401,7 +401,8 @@ function addNewStudent(createdStudent)
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `INSERT INTO students (first_name, last_name, birth_date) 
+                 VALUES (?, ?, ?);`;
 
             function callbackAfterReturnedRowIsProcessed(err, row)
             {

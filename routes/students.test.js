@@ -86,7 +86,79 @@ describe('REST APIs for students', () =>
     describe('POST /students', () =>
     {
         // TODO: add your tests
+
+        test('should return a 400 response when the "firstName" field is missing', async () =>
+        {
+            const form_data = {
+                // firstName: 'John',
+                lastName: 'Doe',
+                birthDate: '2000-01-01'
+            };
+
+            const response = await request
+                .post('/students')
+                .type('form')
+                .send(form_data);
+
+            expect(response.status).toBe(400);
+        });
+
+        test('should return a 201 response when all required fields are provided', async () =>
+        {
+            const form_data = {
+                firstName: 'John',
+                lastName: 'Doe',
+                birthDate: '2000-01-01'
+            };
+
+            const response = await request
+                .post('/students')
+                .type('form')
+                .send(form_data);
+
+            expect(response.status).toBe(201);
+        });
+
+        test('should return a 422 response when "birthDate" is not in ISO format', async () =>
+        {
+            const form_data = {
+                firstName: 'John',
+                lastName: 'Doe',
+                birthDate: '01-01-2000' // invalid format
+            };
+
+            const response = await request
+                .post('/students')
+                .type('form')
+                .send(form_data);
+
+            expect(response.status).toBe(422);
+        });
+
+        test('should return a 422 response when adding a student with the same firstName+lastName+birthDate twice', async () =>
+        {
+            const form_data = {
+                firstName: 'Jane',
+                lastName: 'Smith',
+                birthDate: '1999-12-31'
+            };
+
+            const first_response = await request
+                .post('/students')
+                .type('form')
+                .send(form_data);
+
+            expect(first_response.status).toBe(201);
+
+            const second_response = await request
+                .post('/students')
+                .type('form')
+                .send(form_data);
+
+            expect(second_response.status).toBe(422);
+        });
     });
+
 
     describe('PUT /students/:id', () =>
     {
