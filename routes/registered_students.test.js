@@ -86,6 +86,65 @@ describe('REST APIs for registered_students', () =>
     describe('DELETE /drop_student_from_class', () =>
     {
         // TODO: add your tests
+        test('should return a 204 response when successfully dropping student with id = 2 from class with id = 3', async() =>
+        {
+            const form_data = {
+                studentId: 2,
+                classId: 3
+            };
+
+            const response = await request
+                .delete('/drop_student_from_class')
+                .type('form')
+                .send(form_data);
+
+            expect(response.status).toBe(204);
+        });
+
+        test('should return a 404 response when dropping a non-existing student', async() =>
+        {
+            const form_data = {
+                studentId: 999,
+                classId: 1
+            };
+
+            const response = await request
+                .delete('/drop_student_from_class')
+                .type('form')
+                .send(form_data);
+
+            expect(response.status).toBe(404);
+        });
+
+        test('should return a 404 response when dropping a student from a non-existing class', async() =>
+        {
+            const form_data = {
+                studentId: 1,
+                classId: 999
+            };
+
+            const response = await request
+                .delete('/drop_student_from_class')
+                .type('form')
+                .send(form_data);
+
+            expect(response.status).toBe(404);
+        });
+
+        test('should return a 400 response when required parameters are missing', async() =>
+        {
+            const form_data = {
+                studentId: 1
+                // classId is missing
+            };
+
+            const response = await request
+                .delete('/drop_student_from_class')
+                .type('form')
+                .send(form_data);
+
+            expect(response.status).toBe(400);
+        });
     });
 
     describe('GET /students_taking_class/:classCode', () =>

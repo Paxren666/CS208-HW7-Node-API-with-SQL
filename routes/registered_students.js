@@ -83,6 +83,52 @@ router.post("/add_student_to_class", async function (req, res)
 router.delete("/drop_student_from_class", async function (req, res)
 {
     // TODO: implement this route
+    try
+    {
+        const studentId = req.body.studentId;
+        const classId = req.body.classId;
+
+        console.log("studentId = " + studentId);
+        console.log("classId   = " + classId);
+
+        if (studentId === undefined)
+        {
+            res.status(400).json({"error": "bad request: expected parameter 'studentId' is not defined"});
+            return;
+        }
+
+        if (classId === undefined)
+        {
+            res.status(400).json({"error": "bad request: expected parameter 'classId' is not defined"});
+            return;
+        }
+
+        const student = await db.getStudentWithId(studentId);
+        const classItem = await db.getClassWithId(classId);
+
+        if (student == null)
+        {
+            console.log("No student with id " + studentId + " exists.");
+            res.status(404).json({"error": "student with id = " + studentId + " does not exist"});
+            return;
+        }
+
+        if (classItem == null)
+        {
+            console.log("No class with id " + classId + " exists.");
+            res.status(404).json({"error": "class with id = " + classId + " does not exist"});
+            return;
+        }
+
+        await db.dropAnExistingStudentFromAClass(studentId, classId);
+
+        res.status(204).send(); // No content on successful delete
+    }
+    catch (err)
+    {
+        console.error("Error:", err.message);
+        res.status(422).json({"error": "failed to drop the student with id = " + req.body.studentId + " from the class with id = " + req.body.classId});
+    }
 });
 
 
