@@ -349,7 +349,9 @@ function getStudentWithId(id)
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `SELECT id, first_name, last_name, birth_date
+                 FROM students
+                 WHERE id = ?;`;
 
             function callbackAfterReturnedRowIsProcessed(err, row)
             {
