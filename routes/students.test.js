@@ -163,6 +163,11 @@ describe('REST APIs for students', () =>
     describe('PUT /students/:id', () =>
     {
         // TODO: add your tests
+    });
+
+    describe('PATCH /students/:id', () =>
+    {
+        // TODO: add your tests
         test('should return a 200 response when updating only a subset of fields for the student with id = 4', async () =>
         {
             const form_data = {
@@ -212,13 +217,29 @@ describe('REST APIs for students', () =>
         });
     });
 
-    describe('PATCH /students/:id', () =>
-    {
-        // TODO: add your tests
-    });
-
     describe('DELETE /students/:id', () =>
     {
         // TODO: add your tests
+        test('should return a 204 response when deleting the student with id = 6', async () =>
+        {
+            const response = await request.delete('/students/6');
+            expect(response.status).toBe(204);
+        });
+
+        test('should return a 422 response when deleting the student with id = 1 which is referenced from another table', async () =>
+        {
+            const response = await request.delete('/students/1');
+
+            // student with id = 1 might be referenced in another table (e.g., registered_students)
+            // deleting it would violate a foreign key constraint
+            // therefore, the server should catch the SQL error and return 422
+            expect(response.status).toBe(422);
+        });
+
+        test('should return a 404 response when deleting the student with id = 999 which does not exist', async () =>
+        {
+            const response = await request.delete('/students/999');
+            expect(response.status).toBe(404);
+        });
     });
 });
