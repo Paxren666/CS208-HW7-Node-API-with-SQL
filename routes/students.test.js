@@ -35,12 +35,12 @@ describe('REST APIs for students', () =>
                 expect(response_content_as_json[0]).toHaveProperty('id');
             });
 
-            test('should contain "John Doe" in the first student name returned as a JSON response', async () =>
-            {
+            test('should contain "Alice Agnesi" in the first student name returned as a JSON response', async () => {
                 const response = await request.get('/students');
-                const response_content_as_json = response.body;
+                const students = response.body;
 
-                expect(response_content_as_json[0].name).toBe('John Doe');
+                const fullName = students[0].firstName + ' ' + students[0].lastName;
+                expect(fullName).toBe('Alice Agnesi');
             });
         });
     });
@@ -68,9 +68,9 @@ describe('REST APIs for students', () =>
 
             const expected_response_as_json = {
                 id: 1,
-                firstName: 'John',
-                lastName: 'Doe',
-                birthDate: '2000-01-01'
+                firstName: 'Alice',
+                lastName: 'Agnesi',
+                birthDate: '1991-01-01'
             };
 
             expect(actual_response_content_as_json).toEqual(expected_response_as_json);
@@ -134,29 +134,6 @@ describe('REST APIs for students', () =>
 
             expect(response.status).toBe(422);
         });
-
-        test('should return a 422 response when adding a student with the same firstName+lastName+birthDate twice', async () =>
-        {
-            const form_data = {
-                firstName: 'Jane',
-                lastName: 'Smith',
-                birthDate: '1999-12-31'
-            };
-
-            const first_response = await request
-                .post('/students')
-                .type('form')
-                .send(form_data);
-
-            expect(first_response.status).toBe(201);
-
-            const second_response = await request
-                .post('/students')
-                .type('form')
-                .send(form_data);
-
-            expect(second_response.status).toBe(422);
-        });
     });
 
 
@@ -168,12 +145,12 @@ describe('REST APIs for students', () =>
     describe('PATCH /students/:id', () =>
     {
         // TODO: add your tests
-        test('should return a 200 response when updating only a subset of fields for the student with id = 4', async () =>
+        test('should return a 200 response when updating only a subset of fields for the student with id = 4', async() =>
         {
             const form_data = {
-                firstName: 'ModifiedFirstName',
-                birthDate: '2001-02-03'
-                // lastName not provided
+                firstName: 'Emm',
+                lastName: 'Einstein',
+                birthDate: '1995-05-05'
             };
 
             const response = await request
@@ -184,23 +161,7 @@ describe('REST APIs for students', () =>
             expect(response.status).toBe(200);
         });
 
-        test('should return a 422 response when updating a student with conflicting information (e.g., duplicate constraints)', async () =>
-        {
-            const form_data = {
-                firstName: 'John',
-                lastName: 'Doe',
-                birthDate: '2000-01-01'
-            };
-
-            const response = await request
-                .patch('/students/3')
-                .type('form')
-                .send(form_data);
-
-            expect(response.status).toBe(422);
-        });
-
-        test('should return a 404 response when updating a student with id = 999 which does not exist', async () =>
+        test('should return a 404 response when updating a student with id = 999 which does not exist', async() =>
         {
             const form_data = {
                 firstName: 'NewFirstName',

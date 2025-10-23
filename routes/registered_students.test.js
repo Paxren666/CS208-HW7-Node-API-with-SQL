@@ -1,9 +1,11 @@
 const {describe, expect, test} = require("@jest/globals");
 
+
 // supertest is a framework that allows to easily test web APIs
 const supertest = require('supertest');
 const app = require('./../app');
 const request = supertest(app);
+
 
 describe('REST APIs for registered_students', () =>
 {
@@ -16,18 +18,22 @@ describe('REST APIs for registered_students', () =>
             expect(response.status).toBe(200);
         });
 
+
         test('should have Content-Type "application/json"', async () =>
         {
             const response = await request.get('/registered_students');
             expect(response.header['content-type']).toMatch(/application\/json/);
         });
 
+
         test('should return an array of registered students with expected fields', async () =>
         {
             const response = await request.get('/registered_students');
             const body = response.body;
 
+
             expect(Array.isArray(body)).toBe(true);
+
 
             if (body.length > 0)
             {
@@ -39,6 +45,7 @@ describe('REST APIs for registered_students', () =>
             }
         });
 
+
         test('should return an empty array if there are no registered students', async () =>
         {
             // Assuming database might be empty or reset for testing
@@ -49,57 +56,71 @@ describe('REST APIs for registered_students', () =>
         });
     });
 
+
     describe('POST /add_student_to_class', () =>
     {
         // TODO: add your tests
-        test('should return a 201 response when successfully adding student with id = 3 to class with id = 2', async () =>
+        test('should return 400 if studentId or classId is missing', async () =>
         {
             const response = await request
                 .post('/add_student_to_class')
-                .send({ studentId: 3, classId: 2 });
+                .type('form') // 👈 this is the key fix
+                .send({ studentId: 5 }); // missing classId
 
-            expect(response.status).toBe(201);
-            expect(response.body.message).toContain("SUCCESSFULLY added");
-        });
-
-        test('should return a 400 response when missing studentId or classId', async () =>
-        {
-            const response = await request
-                .post('/add_student_to_class')
-                .send({ studentId: 3 }); // missing classId
 
             expect(response.status).toBe(400);
-            expect(response.body.error).toBe("missing studentId or classId");
+            expect(response.body).toHaveProperty('error', 'missing studentId or classId');
         });
 
-        test('should return a 422 response when trying to add a student that already exists in the same class', async () =>
+
+        test('should return 201 if a student is successfully added to a class', async () =>
         {
             const response = await request
                 .post('/add_student_to_class')
-                .send({ studentId: 1, classId: 1 });
+                .type('form') // 👈 add this
+                .send({ studentId: 1, classId: 4 });
 
-            // attempting duplicate entry should violate UNIQUE/FOREIGN constraint
+
+            expect(response.status).toBe(201);
+            expect(response.body.message)
+                .toContain('SUCCESSFULLY added the student with id = 1 to the class with id = 4');
+        });
+
+
+        test('should return 422 if adding a student fails (e.g., already exists or invalid)', async () =>
+        {
+            const response = await request
+                .post('/add_student_to_class')
+                .type('form') // 👈 add this
+                .send({ studentId: 1, classId: 4 });
+
+
             expect(response.status).toBe(422);
+            expect(response.body.error).toContain('failed to add the student');
         });
     });
+
 
     describe('DELETE /drop_student_from_class', () =>
     {
         // TODO: add your tests
-        test('should return a 204 response when successfully dropping student with id = 2 from class with id = 3', async() =>
+        test('should return a 204 response when successfully dropping student with id = 1 from class with id = 8', async() =>
         {
             const form_data = {
-                studentId: 2,
-                classId: 3
+                studentId: 1,
+                classId: 8
             };
+
 
             const response = await request
                 .delete('/drop_student_from_class')
                 .type('form')
                 .send(form_data);
 
+
             expect(response.status).toBe(204);
         });
+
 
         test('should return a 404 response when dropping a non-existing student', async() =>
         {
@@ -108,13 +129,16 @@ describe('REST APIs for registered_students', () =>
                 classId: 1
             };
 
+
             const response = await request
                 .delete('/drop_student_from_class')
                 .type('form')
                 .send(form_data);
 
+
             expect(response.status).toBe(404);
         });
+
 
         test('should return a 404 response when dropping a student from a non-existing class', async() =>
         {
@@ -123,13 +147,16 @@ describe('REST APIs for registered_students', () =>
                 classId: 999
             };
 
+
             const response = await request
                 .delete('/drop_student_from_class')
                 .type('form')
                 .send(form_data);
 
+
             expect(response.status).toBe(404);
         });
+
 
         test('should return a 400 response when required parameters are missing', async() =>
         {
@@ -138,19 +165,23 @@ describe('REST APIs for registered_students', () =>
                 // classId is missing
             };
 
+
             const response = await request
                 .delete('/drop_student_from_class')
                 .type('form')
                 .send(form_data);
 
+
             expect(response.status).toBe(400);
         });
     });
+
 
     describe('GET /students_taking_class/:classCode', () =>
     {
         // TODO: add your tests
     });
+
 
     describe('GET /classes_taken_by_student/:studentId', () =>
     {
