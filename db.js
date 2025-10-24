@@ -349,7 +349,9 @@ function getStudentWithId(id)
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `SELECT id, first_name, last_name, birth_date
+                 FROM students
+                 WHERE id = ?;`;
 
             function callbackAfterReturnedRowIsProcessed(err, row)
             {
@@ -399,7 +401,8 @@ function addNewStudent(createdStudent)
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `INSERT INTO students (first_name, last_name, birth_date) 
+                 VALUES (?, ?, ?);`;
 
             function callbackAfterReturnedRowIsProcessed(err, row)
             {
@@ -436,7 +439,9 @@ function updateExistingStudentInformation(studentToUpdate)
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `UPDATE students 
+                 SET first_name = ?, last_name = ?, birth_date = ? 
+                 WHERE id = ?;`;
 
             function callbackAfterReturnedRowIsProcessed(err, row)
             {
@@ -473,7 +478,8 @@ function deleteExistingStudent(id)
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `DELETE FROM students 
+                 WHERE id = ?;`;
 
             function callbackAfterReturnedRowIsProcessed(err, row)
             {
@@ -510,7 +516,14 @@ function getAllRegisteredStudents()
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `SELECT students.id,
+                        students.first_name || ' ' || students.last_name AS student_full_name,
+                        classes.code,
+                        classes.title
+                 FROM registered_students
+                          INNER JOIN students ON registered_students.student_id = students.id
+                          INNER JOIN classes ON registered_students.class_id = classes.id
+                 ORDER BY students.id;`;
 
             let listOfRegisteredStudentJoinResults = [];
 
@@ -560,7 +573,8 @@ function addStudentToClass(studentId, classId)
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `INSERT INTO registered_students (student_id, class_id)
+                 VALUES (?, ?);`;
 
             function callbackAfterReturnedRowIsProcessed(err, row)
             {
@@ -597,7 +611,8 @@ function dropAnExistingStudentFromAClass(studentId, classId)
         db.serialize(function()
         {
             const sql =
-                `TODO: replace me with actual query`;
+                `DELETE FROM registered_students
+                 WHERE student_id = ? AND class_id = ?;`;
 
             function callbackAfterReturnedRowIsProcessed(err, row)
             {
