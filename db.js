@@ -683,6 +683,38 @@ function dropAnExistingStudentFromAClass(studentId, classId)
     });
 }
 
+// Fetch all classes and grades for a specific student
+function getGradesByStudentId(studentId) {
+    return new Promise(function (resolve, reject) {
+        db.serialize(function () {
+            const sql = `
+                SELECT 
+                    s.id AS student_id,
+                    s.first_name,
+                    s.last_name,
+                    c.id AS class_id,
+                    c.code,
+                    c.title,
+                    rs.grade
+                FROM registered_students rs
+                JOIN students s ON rs.student_id = s.id
+                JOIN classes c ON rs.class_id = c.id
+                WHERE s.id = ?;
+            `;
+
+            db.all(sql, [studentId], function (err, rows) {
+                if (err) {
+                    console.error("Error in getGradesByStudentId:", err.message);
+                    reject(err);
+                } else {
+                    console.log("Grades query result:", rows);
+                    resolve(rows);
+                }
+            });
+        });
+    });
+}
+
 function getAllStudentsThatAreTakingAClass(classCode)
 {
     // TODO: implement this function
@@ -723,6 +755,7 @@ module.exports = {
     getAllRegisteredStudents,
     addStudentToClass,
     dropAnExistingStudentFromAClass,
+    getGradesByStudentId,
     getAllStudentsThatAreTakingAClass,
     showAllClassesInWhichAStudentIsEnrolled,
 };

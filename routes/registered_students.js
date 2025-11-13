@@ -129,6 +129,27 @@ router.delete("/drop_student_from_class", async function (req, res)
 });
 
 /**
+ * GET /student_grades/:studentID
+ *
+ * Returns a list of the student's classes and their grades
+ */
+router.get("/student_grades/:studentId", async function (req, res) {
+    try {
+        const studentId = req.params.studentId;
+        const grades = await db.getGradesByStudentId(studentId);
+
+        if (grades.length === 0) {
+            return res.status(404).json({ message: "No grades found for this student." });
+        }
+
+        res.json(grades);
+    } catch (err) {
+        console.error("Error fetching student grades:", err.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+/**
  * GET /students_taking_class/{classCode}
  *
  * @return a list of registered students (extracted from a join between
