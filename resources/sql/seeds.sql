@@ -29,30 +29,32 @@ VALUES
     ('Jessica', 'Jackson', '2000-10-10');
 
 
-INSERT INTO registered_students(class_id, student_id)
+INSERT INTO registered_students(class_id, student_id, grade)
 SELECT (SELECT id
         FROM classes
         WHERE code = 'ENGL 101'),
        (SELECT id
         FROM students
-        WHERE first_name = 'George');
+        WHERE first_name = 'George'),
+    'B';
 
-INSERT INTO registered_students(class_id, student_id)
+INSERT INTO registered_students(class_id, student_id, grade)
 SELECT (SELECT id
         FROM classes
         WHERE code = 'MATH 170'),
-       id
+       id,
+       'A'
 FROM students
 WHERE (first_name LIKE '%i%') AND (last_name LIKE '%i%');
 
-INSERT INTO registered_students(class_id, student_id)
+INSERT INTO registered_students(class_id, student_id, grade)
 SELECT (SELECT id
         FROM classes
-        WHERE code = 'CS 410'), id
+        WHERE code = 'CS 410'), id,'C'
 FROM students
 WHERE (first_name LIKE '%a%') AND (last_name LIKE '%i%');
 
-INSERT INTO registered_students(class_id, student_id)
-SELECT classes.id, students.id
+INSERT INTO registered_students(class_id, student_id, grade)
+SELECT classes.id, students.id, 'A'
 FROM students
 INNER JOIN classes ON (code = 'WRITE 212') AND (LOWER(first_name) LIKE '%r%');
