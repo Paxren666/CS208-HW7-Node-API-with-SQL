@@ -31,6 +31,8 @@ CREATE TABLE registered_students
     class_id   INTEGER NOT NULL,
     student_id INTEGER NOT NULL,
     signup_date DATE DEFAULT CURRENT_DATE,
+    grade CHAR(1) CHECK (grade IN ('A', 'B', 'C', 'D', 'F')),
+
     FOREIGN KEY (class_id) REFERENCES classes (id),
     FOREIGN KEY (student_id) REFERENCES students (id),
     UNIQUE (class_id, student_id)
