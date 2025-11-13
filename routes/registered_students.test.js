@@ -151,6 +151,34 @@ describe('REST APIs for registered_students', () =>
         });
     });
 
+    describe('GET /student_grades/:studentId', () => {
+        test('should return 200 and an array of grades for a valid student ID', async () => {
+            const response = await request.get('/student_grades/7'); // pick a valid ID from your seeds
+            expect(response.status).toBe(200);
+            expect(response.header['content-type']).toMatch(/application\/json/);
+
+            // Should return an array
+            expect(Array.isArray(response.body)).toBe(true);
+
+            // If the student has grades, check that each result has expected fields
+            if (response.body.length > 0) {
+                const first = response.body[0];
+                expect(first).toHaveProperty('student_id');
+                expect(first).toHaveProperty('first_name');
+                expect(first).toHaveProperty('last_name');
+                expect(first).toHaveProperty('code');
+                expect(first).toHaveProperty('title');
+                expect(first).toHaveProperty('grade');
+            }
+        });
+
+        test('should return 404 if the student ID does not exist', async () => {
+            const response = await request.get('/student_grades/99999'); // nonexistent ID
+            expect(response.status).toBe(404);
+            expect(response.body).toHaveProperty('message', 'No grades found for this student.');
+        });
+    });
+
     describe('GET /students_taking_class/:classCode', () =>
     {
         // TODO: add your tests
